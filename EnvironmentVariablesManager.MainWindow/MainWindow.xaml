@@ -1,0 +1,240 @@
+﻿<Window x:Class="EnvironmentVariablesManager.MainWindow.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:fa="http://schemas.awesome.incremented/wpf/xaml/fontawesome.sharp"  
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:EnvironmentVariablesManager.MainWindow"
+        mc:Ignorable="d"
+        Title="Environment Variables Manager"
+        WindowStyle="None" 
+        AllowsTransparency="True"
+        Height="600"
+        Background="Transparent"
+        Width="900"
+        Opacity="100">
+
+    <Window.Resources>
+        <Style x:Key="WindowButtonStyle" TargetType="{x:Type Button}">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#FF333333"/>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Width" Value="40"/>
+            <Setter Property="Height" Value="30"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border Background="{TemplateBinding Background}" 
+                            BorderBrush="{TemplateBinding BorderBrush}" 
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#FFEEEEEE"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="#FFDDDDDD"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <!-- Основной контейнер с закругленными углами -->
+    <Border CornerRadius="30" 
+            Background="#FFF0F0F0" 
+            BorderBrush="#FFCCCCCC" 
+            BorderThickness="1">
+
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+
+            <!-- Заголовок окна -->
+            <Border Grid.Row="0"
+                    Background="#FFFFFFFF" 
+                    Height="40"
+                    CornerRadius="30,30,0,0">
+
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Название приложения -->
+                    <TextBlock Grid.Column="0"
+                               Text="Тестовое WPF-приложение для SmartMealService"
+                               VerticalAlignment="Center"
+                               Margin="15,0,0,0"
+                               FontSize="14"
+                               FontWeight="SemiBold"
+                               Foreground="#FF333333"/>
+
+                    <!-- Кнопки управления окном -->
+                    <StackPanel Grid.Column="1"  Background="Transparent"
+                                Margin="0 0 12 0"
+                                Orientation="Horizontal" 
+                                HorizontalAlignment="Right">
+
+                        <Button x:Name="MinimizeButton"
+                                Style="{StaticResource WindowButtonStyle}"
+                                Click="MinimizeButton_Click">
+                            <fa:IconImage Icon="Minus" Width="15"/>
+                        </Button>
+                        <Button x:Name="CloseButton"
+                                Style="{StaticResource WindowButtonStyle}"
+                                Click="CloseButton_Click">
+                            <fa:IconImage Icon="Close" Width="39" Height="14"/>
+                        </Button>
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <!-- Основное содержимое  -->
+            <Border Grid.Row="1" 
+                    Background="#FFFFFFFF"
+                    Margin="1,0,1,0">
+                <Grid Margin="10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- DataGrid с закругленными углами  -->
+                    <Border Grid.Row="1"
+                            Background="White"
+                            Margin="0,0,0, 0"
+                            CornerRadius="30"
+                            BorderBrush="Black"
+                            BorderThickness="3">
+                        <!-- Увеличил ZIndex чтобы рамка была поверх -->
+                        <Grid Margin="1">
+
+                            <Border x:Name="ClipVisual"
+                                    Background="White"
+                                    CornerRadius="27" />
+
+                            <DataGrid x:Name="VariablesDataGrid"
+                                      AutoGenerateColumns="False"
+                                      HeadersVisibility="Column"
+                                      SelectionMode="Single"
+                                      SelectionUnit="FullRow"
+                                      CanUserAddRows="False"
+                                      CanUserDeleteRows="False"
+                                      RowHeight="30"
+                                      BorderThickness="0"
+                                      Background="Transparent"
+                                      Margin="2"
+                                      ItemsSource="{Binding EnvironmentVariables}">
+                                <!-- ДОБАВЛЕНО: привязка данных -->
+
+                                <DataGrid.OpacityMask>
+                                    <VisualBrush Stretch="Fill" Visual="{Binding ElementName=ClipVisual}"/>
+                                </DataGrid.OpacityMask>
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Имя переменной" Binding="{Binding Name}" Width="*" IsReadOnly="True"/>
+                                    <DataGridTextColumn Header="Значение" Binding="{Binding Value}" Width="*"/>
+                                    <DataGridTextColumn Header="Комментарий" Binding="{Binding Comment}" Width="*"/>
+                                </DataGrid.Columns>
+
+                                <!-- Стиль для заголовков колонок -->
+                                <DataGrid.ColumnHeaderStyle>
+                                    <Style TargetType="{x:Type DataGridColumnHeader}">
+                                        <Setter Property="Background" Value="White"/>
+                                        <Setter Property="Foreground" Value="Black"/>
+                                        <Setter Property="BorderBrush" Value="Black"/>
+                                        <Setter Property="BorderThickness" Value="0,0,1,1"/>
+                                        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                                        <Setter Property="Padding" Value="10,5"/>
+                                        <Setter Property="FontWeight" Value="Normal"/>
+                                    </Style>
+                                </DataGrid.ColumnHeaderStyle>
+
+                                <!-- Стиль для закругленных углов DataGrid  -->
+                                <DataGrid.Style>
+                                    <Style TargetType="{x:Type DataGrid}">
+                                        <Setter Property="Template">
+                                            <Setter.Value>
+                                                <ControlTemplate TargetType="{x:Type DataGrid}">
+                                                    <Border CornerRadius="10"
+                                                            Background="{TemplateBinding Background}"
+                                                            BorderBrush="{TemplateBinding BorderBrush}"
+                                                            BorderThickness="{TemplateBinding BorderThickness}"
+                                                            Padding="{TemplateBinding Padding}"
+                                                            SnapsToDevicePixels="True">
+                                                        <ScrollViewer x:Name="DG_ScrollViewer" Focusable="false">
+                                                            <ScrollViewer.Template>
+                                                                <ControlTemplate TargetType="{x:Type ScrollViewer}">
+                                                                    <Grid>
+                                                                        <Grid.ColumnDefinitions>
+                                                                            <ColumnDefinition Width="Auto"/>
+                                                                            <ColumnDefinition Width="*"/>
+                                                                            <ColumnDefinition Width="Auto"/>
+                                                                        </Grid.ColumnDefinitions>
+
+                                                                        <Grid.RowDefinitions>
+                                                                            <RowDefinition Height="Auto"/>
+                                                                            <RowDefinition Height="*"/>
+                                                                            <RowDefinition Height="Auto"/>
+                                                                        </Grid.RowDefinitions>
+
+                                                                        <DataGridColumnHeadersPresenter Grid.Column="1"/>
+
+                                                                        <ScrollContentPresenter x:Name="PART_ScrollContentPresenter"
+                                                                                                Grid.Row="1"
+                                                                                                Grid.Column="1"
+                                                                                                CanContentScroll="{TemplateBinding CanContentScroll}"/>
+
+                                                                        <ScrollBar x:Name="PART_VerticalScrollBar"
+                                                                                   Grid.Row="1"
+                                                                                   Grid.Column="2"
+                                                                                   Orientation="Vertical"
+                                                                                   Maximum="{TemplateBinding ScrollableHeight}"
+                                                                                   ViewportSize="{TemplateBinding ViewportHeight}"
+                                                                                   Value="{Binding VerticalOffset, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}"
+                                                                                   Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"/>
+
+                                                                        <ScrollBar x:Name="PART_HorizontalScrollBar"
+                                                                                   Grid.Row="2"
+                                                                                   Grid.Column="1"
+                                                                                   Orientation="Horizontal"
+                                                                                   Maximum="{TemplateBinding ScrollableWidth}"
+                                                                                   ViewportSize="{TemplateBinding ViewportWidth}"
+                                                                                   Value="{Binding HorizontalOffset, RelativeSource={RelativeSource TemplatedParent}, Mode=OneWay}"
+                                                                                   Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}"/>
+                                                                    </Grid>
+                                                                </ControlTemplate>
+                                                            </ScrollViewer.Template>
+                                                            <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"/>
+                                                        </ScrollViewer>
+                                                    </Border>
+                                                </ControlTemplate>
+                                            </Setter.Value>
+                                        </Setter>
+                                    </Style>
+                                </DataGrid.Style>
+                            </DataGrid>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Border>
+
+            <!-- Нижний колонтитул -->
+            <Border Grid.Row="2" 
+                    Background="#FFFFFFFF"
+                    Height="30"
+                    CornerRadius="0,0,30,30"/>
+        </Grid>
+    </Border>
+</Window>

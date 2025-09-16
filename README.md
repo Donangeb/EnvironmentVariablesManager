@@ -1,0 +1,1 @@
+# EnvironmentVariablesManager.MainWindow
